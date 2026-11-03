@@ -16,10 +16,14 @@ Java 17 · Spring Boot 3.3.4 · Spring JDBC · PostgreSQL 16 · Spring Security 
 | Endpoint | Acceso | Notas |
 |---|---|---|
 | `POST /api/auth/login` | Público | Devuelve `{accessToken, tokenType, expiresIn, user}`. Credenciales malas → `401` |
-| `POST /api/auth/register` | **ADMIN** | Crea usuarios con rol `USER`. Nombre repetido → `409` |
+| `POST /api/auth/register` | **ADMIN** | Crea usuarios con rol `USER`; `estudianteId` opcional. Nombre repetido → `409` |
+| `PATCH /api/auth/users/{username}` | **ADMIN** | Vincula un usuario con un estudiante: body `{"estudianteId": 12}` |
 | `GET /api/auth/me` | Token | Usuario del token |
 | `GET /health` | Público | Health check de la plataforma |
 | `/swagger-ui.html` | Público | Documentación |
+
+**Estudiantes:** el usuario se vincula a un estudiante con `estudianteId` (columna `users.estudiante_id`, solo el id, sin
+foreign key entre módulos). El login lo incluye en el token como claim `estudianteId`; el frontend y el Gateway lo leen de ahí.
 
 Las contraseñas se guardan con **BCrypt**. El usuario `ADMIN` inicial se crea al arrancar con `ADMIN_USERNAME` / `ADMIN_PASSWORD`
 (si ya existe en la base, no se toca).

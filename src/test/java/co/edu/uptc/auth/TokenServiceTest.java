@@ -35,12 +35,13 @@ class TokenServiceTest {
         JWKSource<SecurityContext> jwks = new ImmutableSecret<>(key);
         TokenService service = new TokenService(new NimbusJwtEncoder(jwks), props);
 
-        TokenResponse response = service.issue(new UserResponse("laura", "USER"));
+        TokenResponse response = service.issue(new UserResponse("laura", "USER", 12L));
 
         Jwt jwt = NimbusJwtDecoder.withSecretKey(key).macAlgorithm(MacAlgorithm.HS256).build()
                 .decode(response.accessToken());
         assertEquals("laura", jwt.getSubject());
         assertEquals("USER", jwt.getClaimAsString(TokenService.ROLE_CLAIM));
+        assertEquals(12L, ((Number) jwt.getClaim(TokenService.ESTUDIANTE_ID_CLAIM)).longValue());
         assertEquals("api-gateway-uptc", jwt.getIssuer().toString());
         assertTrue(jwt.getAudience().contains("sistema-academico"));
         assertTrue(jwt.getExpiresAt().isAfter(Instant.now()));

@@ -33,6 +33,12 @@ public class ApiExceptionHandler {
                 .body(ApiError.of("INVALID_CREDENTIALS", "Usuario o contraseña incorrectos"));
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ApiError> userNotFound(UserNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiError.of("USER_NOT_FOUND", "El usuario no existe"));
+    }
+
     @ExceptionHandler(UsernameTakenException.class)
     public ResponseEntity<ApiError> usernameTaken(UsernameTakenException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)

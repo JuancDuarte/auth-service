@@ -106,6 +106,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, LOGIN_PATH).permitAll()
                         .requestMatchers("/health", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/register").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/auth/users/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/auth/me").authenticated()
                         .anyRequest().denyAll())
                 .oauth2ResourceServer(oauth -> oauth

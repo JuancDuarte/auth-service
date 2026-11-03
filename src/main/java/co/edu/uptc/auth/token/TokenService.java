@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 public class TokenService {
 
     public static final String ROLE_CLAIM = "role";
+    /** Id del estudiante vinculado al usuario; el frontend y el Gateway lo leen del token. */
+    public static final String ESTUDIANTE_ID_CLAIM = "estudianteId";
 
     private final JwtEncoder encoder;
     private final AuthProperties.Jwt jwt;
@@ -29,14 +31,17 @@ public class TokenService {
     public TokenResponse issue(UserResponse user) {
         Instant now = Instant.now();
         Duration ttl = jwt.expiresIn();
-        JwtClaimsSet claims = JwtClaimsSet.builder()
+        JwtClaimsSet.Builder builder = JwtClaimsSet.builder()
                 .issuer(jwt.issuer())
                 .subject(user.username())
                 .audience(List.of(jwt.audience()))
                 .issuedAt(now)
                 .expiresAt(now.plus(ttl))
-                .claim(ROLE_CLAIM, user.role())
-                .build();
+                .claim(ROLE_CLAIM, user.role());
+        if (user.estudianteId() != null) {
+            builder.claim(ESTUDIANTE_ID_CLAIM, user.estudianteId());
+        }
+        JwtClaimsSet claims = builder.build();
         JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
         String token = encoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
         return new TokenResponse(token, "Bearer", ttl.toSeconds(), user);
